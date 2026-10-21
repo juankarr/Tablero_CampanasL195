@@ -1,0 +1,13 @@
+services:
+  iris:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - IRIS_PASSWORD=${IRIS_PASSWORD:?define IRIS_PASSWORD en tu .env}
+      - SECRET_KEY=${SECRET_KEY:?define SECRET_KEY en tu .env}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Permite reemplazar el Excel fuente sin reconstruir la imagen.
+      - ./datos:/app/datos
+    restart: unless-stopped

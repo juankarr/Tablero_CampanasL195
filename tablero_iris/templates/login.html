@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Línea 195 · Iniciar sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="pagina-login">
+  <main class="tarjeta-login">
+    <div class="marca marca-login">
+      <img src="{{ url_for('static', filename='img/bogota-logo-chip.png') }}" alt="Alcaldía de Bogotá" class="marca-logo marca-logo-login">
+      <span class="marca-texto">Línea 195</span>
+    </div>
+    <p class="login-sub">Panel de campañas SMS &amp; Mailing</p>
+
+    <form method="post" action="{{ url_for('login_post', siguiente=request.args.get('siguiente')) }}" class="form-login">
+      {% if error %}
+        <p class="login-error" role="alert">{{ error }}</p>
+      {% endif %}
+      <div class="campo">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" name="usuario" autofocus required autocomplete="username">
+      </div>
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-pri btn-login">Entrar</button>
+    </form>
+  </main>
+</body>
+</html>

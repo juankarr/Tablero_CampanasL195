@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Línea 195 · Panel de campañas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    /* Aplica el tema guardado ANTES de pintar la página, para evitar el parpadeo
+       de claro→oscuro al cargar. */
+    (function () {
+      try {
+        var t = localStorage.getItem("iris-tema");
+        if (t === "oscuro" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.setAttribute("data-tema", "oscuro");
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <!-- Encabezado que solo se ve al imprimir / exportar a PDF -->
+  <div id="encabezado-impresion" class="solo-impresion"></div>
+
+  <div class="app">
+    <!-- ============================================================ SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="marca">
+        <img src="{{ url_for('static', filename='img/bogota-logo.png') }}" alt="Alcaldía de Bogotá" class="marca-logo">
+        <span class="marca-texto">Línea 195</span>
+      </div>
+      <p class="marca-sub">Campañas SMS &amp; Mailing</p>
+
+      <nav class="nav">
+        <a class="nav-item activo" href="#seccion-resumen" data-nav><i class="fa-solid fa-gauge-high"></i><span>Resumen</span></a>
+        <a class="nav-item" href="#seccion-tendencias" data-nav><i class="fa-solid fa-chart-line"></i><span>Tendencias</span></a>
+        <a class="nav-item" href="#seccion-entidades" data-nav><i class="fa-solid fa-building-columns"></i><span>Entidades</span></a>
+        <a class="nav-item" href="#seccion-ranking" data-nav><i class="fa-solid fa-trophy"></i><span>Ranking</span></a>
+        <a class="nav-item" href="#seccion-tabla" data-nav><i class="fa-solid fa-table-list"></i><span>Campañas</span></a>
+      </nav>
+
+      <div class="sidebar-filtros" id="sidebar-filtros">
+        <p class="sidebar-titulo">Filtros</p>
+        <div class="campo">
+          <label for="f-tipo">Canal</label>
+          <select id="f-tipo"></select>
+        </div>
+        <div class="campo">
+          <label id="lbl-f-entidad">Entidad</label>
+          <div class="multiselect" id="ms-entidad" data-filtro="entidad" data-etiqueta-vacia="Todas">
+            <button type="button" class="multiselect-boton" aria-haspopup="true" aria-expanded="false" aria-labelledby="lbl-f-entidad" aria-controls="ms-entidad-panel">
+              <span class="multiselect-etiqueta">Todas</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="multiselect-panel" id="ms-entidad-panel" hidden>
+              <div class="multiselect-buscador">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Buscar entidad…">
+              </div>
+              <div class="multiselect-acciones">
+                <button type="button" data-accion="todas">Todas</button>
+                <button type="button" data-accion="ninguna">Ninguna</button>
+              </div>
+              <div class="multiselect-opciones" role="group" aria-label="Entidad"></div>
+            </div>
+          </div>
+        </div>
+        <div class="campo">
+          <label id="lbl-f-mes">Mes</label>
+          <div class="multiselect" id="ms-mes" data-filtro="mes" data-etiqueta-vacia="Todos">
+            <button type="button" class="multiselect-boton" aria-haspopup="true" aria-expanded="false" aria-labelledby="lbl-f-mes" aria-controls="ms-mes-panel">
+              <span class="multiselect-etiqueta">Todos</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="multiselect-panel" id="ms-mes-panel" hidden>
+              <div class="multiselect-acciones">
+                <button type="button" data-accion="todas">Todos</button>
+                <button type="button" data-accion="ninguna">Ninguno</button>
+              </div>
+              <div class="multiselect-opciones" role="group" aria-label="Mes"></div>
+            </div>
+          </div>
+        </div>
+        <div class="campo">
+          <label id="lbl-f-anio">Año</label>
+          <div class="multiselect" id="ms-anio" data-filtro="anio" data-etiqueta-vacia="Todos">
+            <button type="button" class="multiselect-boton" aria-haspopup="true" aria-expanded="false" aria-labelledby="lbl-f-anio" aria-controls="ms-anio-panel">
+              <span class="multiselect-etiqueta">Todos</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="multiselect-panel" id="ms-anio-panel" hidden>
+              <div class="multiselect-acciones">
+                <button type="button" data-accion="todas">Todos</button>
+                <button type="button" data-accion="ninguna">Ninguno</button>
+              </div>
+              <div class="multiselect-opciones" role="group" aria-label="Año"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-pie">
+        <label class="btn btn-fantasma" for="input-archivo"><i class="fa-solid fa-upload"></i> Actualizar datos</label>
+        <input id="input-archivo" type="file" accept=".xlsx,.xlsm" hidden>
+        {% if tiene_login %}
+        <a class="btn btn-fantasma btn-salir" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <div class="fondo-sidebar" id="fondo-sidebar"></div>
+
+    <!-- ============================================================== MAIN -->
+    <div class="zona-principal">
+      <header class="topbar">
+        <button class="btn-menu" id="btn-menu" aria-label="Abrir menú"><i class="fa-solid fa-bars"></i></button>
+        <h1 class="titulo-pagina">Panel de campañas</h1>
+        <div class="buscador">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="f-buscar" type="search" placeholder="Buscar campaña, entidad, objetivo…">
+        </div>
+        <div class="topbar-acciones">
+          <button id="btn-tema" class="icono-btn" title="Cambiar tema" aria-label="Cambiar entre modo claro y oscuro">
+            <i class="fa-solid fa-moon" id="icono-tema"></i>
+          </button>
+          <button id="btn-descargar-pdf" class="icono-btn" title="Descargar informe en PDF"><i class="fa-solid fa-file-pdf"></i></button>
+          <button id="btn-exportar" class="icono-btn" title="Exportar informe en Excel (igual a lo que ves en pantalla)"><i class="fa-solid fa-file-export"></i></button>
+          <button id="btn-recargar" class="icono-btn" title="Recargar"><i class="fa-solid fa-arrows-rotate"></i></button>
+          <span class="estado-punto" id="estado-punto" title="Estado del archivo"></span>
+        </div>
+      </header>
+      <p id="estado-archivo" class="estado-archivo">Cargando datos…</p>
+
+      <main>
+        <div id="cargando" class="cargando" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Cargando panel…</p>
+        </div>
+
+        <div id="error-carga" class="vacio vacio-error" hidden>
+          <h2><i class="fa-solid fa-triangle-exclamation"></i> No se pudo cargar el panel</h2>
+          <p id="error-carga-detalle">Ocurrió un problema al conectar con el servidor.</p>
+          <button id="btn-reintentar" class="btn btn-pri" type="button">Reintentar</button>
+        </div>
+
+        <section id="vacio" class="vacio" hidden>
+          <h2>Sube un Excel para empezar</h2>
+          <p>Arrastra aquí la base de seguimiento (hojas «Mailing» y «SMS») o cualquier Excel con encabezados en la primera fila.</p>
+          <label class="btn btn-pri" for="input-archivo">Elegir archivo</label>
+        </section>
+
+        <section id="sin-resultados" class="vacio" hidden>
+          <h2>No hay campañas con estos filtros</h2>
+          <p>Prueba a ajustar el canal, la entidad, el mes, el año o el texto de búsqueda.</p>
+          <button id="btn-limpiar-filtros" class="btn btn-pri" type="button">Limpiar filtros</button>
+        </section>
+
+        <div id="tablero" hidden>
+          <!-- ===== Modo campañas ===== -->
+          <div id="modo-campanas">
+
+            <section id="seccion-resumen" class="kpis" aria-label="Indicadores principales"></section>
+
+            <section id="seccion-resumen-stats" class="stats-resumen" aria-label="Indicadores adicionales"></section>
+
+            <section id="seccion-tendencias" class="graficos graficos-3col">
+              <figure class="tarjeta tarjeta-color color-violeta">
+                <figcaption>Evolución mensual<span>Campañas y efectividad</span></figcaption>
+                <div class="lienzo"><canvas id="g-evolucion"></canvas></div>
+              </figure>
+              <figure class="tarjeta tarjeta-color color-ambar">
+                <figcaption>SMS vs. Mailing<span>Volumen y efectividad</span></figcaption>
+                <div class="lienzo"><canvas id="g-canal"></canvas></div>
+              </figure>
+              <figure class="tarjeta tarjeta-color color-teal">
+                <figcaption>Resultado de envíos<span>Distribución total</span></figcaption>
+                <div class="lienzo"><canvas id="g-resultado"></canvas></div>
+              </figure>
+            </section>
+
+            <section id="seccion-semanal" class="graficos">
+              <figure class="tarjeta">
+                <figcaption class="figcaption-centrada">
+                  <span id="titulo-semanal">Mensajes efectivos por semana</span>
+                  <span class="figcaption-controles">
+                    <select id="sel-semanal-metrica" aria-label="Métrica a mostrar">
+                      <option value="efectivos">Mensajes efectivos</option>
+                      <option value="envios">Envíos</option>
+                      <option value="valor">Valor</option>
+                    </select>
+                    <select id="sel-semanal-agrupacion" aria-label="Agrupar por">
+                      <option value="semana">Por semana</option>
+                      <option value="mes">Por mes</option>
+                    </select>
+                  </span>
+                </figcaption>
+                <div class="lienzo lienzo-ancho"><canvas id="g-semanal"></canvas></div>
+              </figure>
+            </section>
+
+            <section id="seccion-entidades" class="graficos graficos-2col">
+              <figure class="tarjeta">
+                <figcaption>Entidades con más campañas</figcaption>
+                <div class="lienzo"><canvas id="g-entidades"></canvas></div>
+              </figure>
+              <div class="tarjeta panel-resumen">
+                <figcaption>Lectura rápida</figcaption>
+                <ul class="lista-resumen" id="lectura-rapida"></ul>
+              </div>
+            </section>
+
+            <section id="seccion-efectividad-entidad" class="graficos">
+              <div class="tarjeta">
+                <h2>Efectividad por entidad</h2>
+                <ul class="lista-efectividad" id="lista-efectividad-entidad"></ul>
+              </div>
+            </section>
+
+            <section id="seccion-ranking" class="rankings">
+              <div class="tarjeta">
+                <h2><i class="fa-solid fa-arrow-trend-up icono-titulo color-teal-txt"></i> Mejor desempeño</h2>
+                <ol class="lista-ranking" id="lista-mejores"></ol>
+              </div>
+              <div class="tarjeta">
+                <h2><i class="fa-solid fa-arrow-trend-down icono-titulo color-rosa-txt"></i> Menor efectividad</h2>
+                <ol class="lista-ranking" id="lista-peores"></ol>
+              </div>
+            </section>
+
+            <section id="seccion-tabla" class="detalle tarjeta">
+              <div class="detalle-cabecera">
+                <h2>Campañas</h2>
+                <p id="nota-tabla" class="estado"></p>
+              </div>
+              <div class="tabla-caja">
+                <table id="tabla-campanas"></table>
+              </div>
+              <div class="paginacion" id="paginacion"></div>
+            </section>
+          </div>
+
+          <!-- ===== Modo genérico (respaldo para otros Excel) ===== -->
+          <div id="modo-generico" hidden>
+            <form class="filtros" id="controles-generico" onsubmit="return false">
+              <div class="campo">
+                <label for="sel-metrica">Valor a medir</label>
+                <select id="sel-metrica"></select>
+              </div>
+              <div class="campo">
+                <label for="sel-agrupar">Agrupar por</label>
+                <select id="sel-agrupar"></select>
+              </div>
+            </form>
+            <section class="kpis" id="kpis-generico" aria-label="Cifras principales"></section>
+            <section class="graficos">
+              <figure class="tarjeta tarjeta-color color-violeta">
+                <figcaption>Por categoría</figcaption>
+                <div class="lienzo"><canvas id="g-generico"></canvas></div>
+              </figure>
+            </section>
+            <section class="detalle tarjeta">
+              <h2>Datos</h2>
+              <p id="nota-tabla-generico" class="estado"></p>
+              <div class="tabla-caja">
+                <table id="tabla-generica"></table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="aviso" role="status" aria-live="polite"></div>
+
+  <script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

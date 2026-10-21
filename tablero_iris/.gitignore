@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+*.log
+venv/
+.venv/
+datos/_export_temp.csv
+datos/_export_temp.xlsx
+datos/.subida-*
